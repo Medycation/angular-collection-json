@@ -1,6 +1,6 @@
 {
   "name": "angular-collection-json",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Collection+JSON Client",
   "main": "index.js",
   "repository": "git://github.com/CamShaft/collection-json.js.git",
