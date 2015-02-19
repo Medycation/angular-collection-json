@@ -1,5 +1,5 @@
 # Collection+JSON Client for AngularJS
-[![Build Status](https://travis-ci.org/Medycation/angular-collection-json.svg?branch=master)](https://travis-ci.org/Medycation/angular-collection-json)
+[![Build Status](https://travis-ci.org/szdavid92/angular-collection-json.svg?branch=master)](https://travis-ci.org/szdavid92/angular-collection-json)
 
 Documentation will be finished once the API is solidified.
 
@@ -90,6 +90,35 @@ angular.module('myApp', ['cj']).configure(function(cjProvider){
 
   // Disable strict version checking (collections without version "1.0")
   cjProvider.setStrictVersion(false);
+
+  // A handler can be added upon successful http request,
+  // which is invoked before processing the template
+  cjProvider.setSuccessHandler(function(response, q, config){
+
+    //follow redirect on 201 - created
+    if (res.status == 201){
+      redirect = res.headers('Location');
+      if(!redirect) {
+        return q.reject(new Error("Http status is 201, but Location header not set"));
+      }
+      else {
+        return client(redirect, config);
+      }
+    }
+
+    //return success and empty collection on 204 - no content
+    else if (res.status == 204) {
+      collectionObj = new Collection({"version":"1.0"});
+      return $q.when(collectionObj);
+    }
+    
+  });
+  
+  // A handler can be added upon failed http request,
+  // which is invoked before processing the template
+  cjProvider.setErrorHandler(function(response, q, config){
+    return q.reject(response);
+  });
 
 });
 ```

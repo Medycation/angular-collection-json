@@ -1,10 +1,11 @@
 {
   "name": "angular-collection-json",
-  "version": "0.6.6",
-  "homepage": "https://github.com/Medycation/angular-collection-json",
+  "version": "1.0.1",
+  "homepage": "https://github.com/szdavid92/angular-collection-json",
   "authors": [
     "jasonaden",
-    "statianzo"
+    "statianzo",
+    "szdavid92"
   ],
   "description": "Collection+JSON parsing for AngularJS",
   "main": "dist/angular-collection-json.js",
@@ -24,10 +25,10 @@
     "Makefile"
   ],
   "dependencies": {
-    "angular": "~1.2"
+    "angular": "^1.2"
   },
   "devDependencies": {
     "lodash": "2.4.1",
-    "angular-mocks": "~1.2"
+    "angular-mocks": "^1.2"
   }
 }

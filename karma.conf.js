@@ -51,6 +51,12 @@ module.exports = function(config) {
       }
     },
 
+    plugins: [
+      'karma-phantomjs-launcher',
+      'karma-jasmine',
+      'karma-coffee-preprocessor'
+    ],
+
 
     // test results reporter to use
     // possible values: 'dots', 'progress'

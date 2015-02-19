@@ -1,24 +1,42 @@
 angular.module('Collection', []).provider 'cj', ->
   urlTransform = angular.identity
   strictVersion = true
+  successHandler = (s, q, c) -> s
+  errorHandler = (e, q, c) -> q.reject e
 
-  setUrlTransform: (transform) -> urlTransform = transform
-  setStrictVersion: (strict) -> strictVersion = strict
+  setUrlTransform: (_urlTransform) -> urlTransform = _urlTransform
+  setStrictVersion: (_strictVersion) -> strictVersion = _strictVersion
+  setSuccessHandler: (_successHandler) -> successHandler = _successHandler
+  setErrorHandler: (_errorHandler) -> errorHandler = _errorHandler
 
   $get: (Collection, $http, $q) ->
+    
     client = (href, options) ->
       config = angular.extend {url: urlTransform(href)}, options
       $http(config).then(
-        (res) -> client.parse res.data
         (res) ->
-          client.parse(res.data).then (collection) ->
-            e = new Error 'request failed'
-            e.response = res
-            e.collection = collection
-            $q.reject e
+          $q.when(successHandler(res, $q, config)).then(
+            (s) -> client.handleSuccess s, config
+            (e) -> client.handleError e, config
+          )
+
+        (res) ->
+          $q.when(errorHandler(res, $q, config)).then(
+            (s) -> client.handleSuccess s, config
+            (e) -> client.handleError e, config
+          )
       )
 
-    client.parse = (source) ->
+    client.handleSuccess = (res, config) -> client.parse res.data, config
+
+    client.handleError = (res, config) ->
+      client.parse(res.data).then (collection) ->
+        e = new Error 'request failed'
+        e.response = res
+        e.collection = collection
+        $q.reject e
+
+    client.parse = (source, config) ->
 
       if !source
         return $q.reject new Error 'source is empty'

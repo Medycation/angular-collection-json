@@ -1,5 +1,5 @@
 angular.module('Collection').provider('Item', ->
-  $get: (Link, Template, $injector, nameFormatter) ->
+  $get: (Link, Template, $injector) ->
     class Item
       constructor: (@_item, @_template, @_cache)->
         # delay the dependency

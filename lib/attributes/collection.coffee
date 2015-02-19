@@ -1,14 +1,8 @@
 angular.module('Collection').provider('Collection', ->
-  $get: (Link, Item, Query, Template, ReadonlyCache, $injector) ->
-    buildCache = (embedded) ->
-      embeddedLookup = {}
-      for c in (embedded || []) when c.collection
-        embeddedLookup[c.collection.href] = c
-
-      new ReadonlyCache embeddedLookup
+  $get: (Link, Item, Query, Template, $injector) ->
 
     class Collection
-      constructor: (collection)->
+      constructor: (collection, options = {})->
         @_collection = collection
         @_links = null
         @_queries = null
@@ -17,7 +11,6 @@ angular.module('Collection').provider('Collection', ->
         @error = @_collection.error
         # delay the dependency
         @client = $injector.get 'cj'
-        @_cache = buildCache(@_collection.embedded)
 
       href: ->
         @_collection.href
@@ -28,7 +21,7 @@ angular.module('Collection').provider('Collection', ->
       links: (rel)->
         return @_links if @_links
 
-        @_links = (new Link l, @_cache for l in (@_collection.links || []) when !rel || l.rel == rel)
+        @_links = (new Link l for l in (@_collection.links || []) when !rel || l.rel == rel)
 
       link: (rel)->
         for l in @links()
@@ -38,7 +31,7 @@ angular.module('Collection').provider('Collection', ->
         return @_items if @_items
         template = @_collection.template
 
-        @_items = (new Item(i, template, @_cache) for i in (@_collection.items || []))
+        @_items = (new Item(i, template) for i in (@_collection.items || []))
 
       item: (href)->
         for i in @items()

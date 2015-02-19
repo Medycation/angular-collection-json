@@ -16,7 +16,7 @@ describe "[template](http://amundsen.com/media-types/collection/format/#objects-
 
   it "should iterate properties template", ->
     template = collection.template()
-    for key, value of template.form(true)
+    for key, value of template.form()
       orig = _.find data.collection.template.data, (datum)-> datum.name is key
       expect(key).toEqual orig.name
       expect(value).toEqual orig.value
@@ -46,11 +46,6 @@ describe "[template](http://amundsen.com/media-types/collection/format/#objects-
     expect(fullName.prompt).toEqual "Full Name"
     expect(fullName.value).toEqual "Joe"
 
-  it "expose data in a nested structure", ->
-    newItem = collection.template()
-    blogDatum = newItem.datum("blog")
-    expect(newItem.data.blog).toEqual blogDatum
-
   it "should create a form from set values", ->
     blog = "joe.blogger.com"
     email = "test@test.com"
@@ -58,44 +53,24 @@ describe "[template](http://amundsen.com/media-types/collection/format/#objects-
 
     newItem.set 'blog', blog
     newItem.set 'email', email
-    form = newItem.form(true)
+    form = newItem.form()
     expect(form.blog).toEqual blog
     expect(form.email).toEqual email
 
-  it "creates properties", ->
-    blog = "joe.blogger.com"
-    city = "hometown"
+  it "should format the template well", ->
+
     newItem = collection.template()
 
-    newItem.blog = blog
-    expect(newItem.blog).toEqual blog
-    expect(newItem.get 'blog').toEqual blog
+    parsed = JSON.parse newItem.serializeData()
 
-    newItem.address.city = city
-    expect(newItem.address.city).toEqual city
-    expect(newItem.get('address[city]')).toEqual city
-
-    expect(newItem.options.address.city).toEqual []
-    expect(newItem.prompts.address.city).toEqual 'City'
-
-  # We are no longer sealing
-  xit "wont set nonexistant properties", ->
-    newItem = collection.template()
-
-    newItem.missing = 'missing'
-    expect(newItem.missing).toBeUndefined()
-    expect(newItem.get 'missing').toBeUndefined()
-
-  it "should create a nested form", ->
-    email = 'foo'
-    city = 'bar'
-    template = collection.template()
-    template.email = email
-    template.address.city = city
-    form = template.formNested()
-    expect(form.email).toEqual email
-    expect(form.address.city).toEqual city
-
-  it "has enumerable properties", ->
-    newItem = collection.template()
-    expect(_.keys(newItem.address)).toEqual ['city']
+    expect(parsed).toEqual( 
+      {
+        "template": {
+          "data": [
+            {"name": "full-name", "value": "Joe"},
+            {"name": "email", "value": ""},
+            {"name": "blog", "value": ""},
+            {"name": "avatar", "value": ""},
+            {"name": "address[city]", "value": ""}
+          ]}
+      })
